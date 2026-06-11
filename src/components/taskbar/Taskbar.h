@@ -22,7 +22,7 @@ public:
 private:
     void drawTaskbarBackground();
     void drawIconArea();
-    void drawSystemTray();
+    void drawPowerButton();
 
     std::vector<TaskbarIcon> icons;
     float taskbarHeight = 96.0f;

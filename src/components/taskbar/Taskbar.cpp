@@ -13,7 +13,7 @@ Taskbar::Taskbar()
 void Taskbar::draw() {
     drawTaskbarBackground();
     drawIconArea();
-    drawSystemTray();
+    drawPowerButton();
 }
 
 void Taskbar::drawTaskbarBackground() {
@@ -51,25 +51,29 @@ void Taskbar::drawIconArea() {
     }
 }
 
-void Taskbar::drawSystemTray() {
+void Taskbar::drawPowerButton() {
     ImDrawList* drawList = ImGui::GetForegroundDrawList();
     ImVec2 displaySize = ImGui::GetIO().DisplaySize;
 
     float padding = 8.0f;
-    float trayIconSize = 24.0f;
-    float trayY = displaySize.y - taskbarHeight + (taskbarHeight - trayIconSize) / 2;
-
-    float trayBgMinX = displaySize.x - padding - 100.0f;
-    float trayBgMinY = displaySize.y - taskbarHeight + 6.0f;
-    float trayBgMaxX = displaySize.x - padding;
-    float trayBgMaxY = displaySize.y - 6.0f;
+    float btnWidth = 80.0f;
+    float bgMinX = displaySize.x - padding - btnWidth;
+    float bgMinY = displaySize.y - taskbarHeight + 6.0f;
+    float bgMaxX = displaySize.x - padding;
+    float bgMaxY = displaySize.y - 6.0f;
 
     drawList->AddRectFilled(
-        ImVec2(trayBgMinX, trayBgMinY),
-        ImVec2(trayBgMaxX, trayBgMaxY),
+        ImVec2(bgMinX, bgMinY),
+        ImVec2(bgMaxX, bgMaxY),
         IM_COL32(35, 35, 50, 160),
         4.0f
     );
+
+    const char* text = "PWR";
+    ImVec2 textSize = ImGui::CalcTextSize(text);
+    float textX = bgMinX + (btnWidth - textSize.x) / 2;
+    float textY = bgMinY + ((bgMaxY - bgMinY) - textSize.y) / 2;
+    drawList->AddText(ImVec2(textX, textY), IM_COL32(139, 0, 0, 255), text);
 }
 
 void Taskbar::addIcon(const TaskbarIcon& icon) {
