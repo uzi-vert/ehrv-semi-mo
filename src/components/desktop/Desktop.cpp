@@ -62,7 +62,8 @@ void Desktop::draw() {
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoBringToFrontOnFocus |
         ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoScrollWithMouse);
+        ImGuiWindowFlags_NoScrollWithMouse |
+        ImGuiWindowFlags_NoMouseInputs);
 
     drawWallpaper();
     drawClock();

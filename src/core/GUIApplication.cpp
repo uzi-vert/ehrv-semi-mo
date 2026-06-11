@@ -32,7 +32,6 @@ bool GUIApplication::initialize() {
 }
 
 void GUIApplication::bootstrap() {
-    // Phase 1: Bootstrapping — hardware/window system setup
     glfwSetErrorCallback(glfwErrorCallback);
 
     if (!glfwInit()) {
@@ -70,7 +69,6 @@ void GUIApplication::bootstrap() {
 }
 
 void GUIApplication::kernelInit() {
-    // Phase 2: Kernel Initialization — set up data structures
     int monitorWidth, monitorHeight;
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     if (monitor) {
@@ -83,23 +81,19 @@ void GUIApplication::kernelInit() {
 
     UIConfig::getInstance().calculateScaling(monitorWidth, monitorHeight);
     UIManager::getInstance().initialize();
-
-    glfwSetKeyCallback(m_window, [](GLFWwindow*, int, int, int, int) {});
-    glfwSetMouseButtonCallback(m_window, [](GLFWwindow*, int, int, int) {});
-    glfwSetScrollCallback(m_window, [](GLFWwindow*, double, double) {});
 }
 
 void GUIApplication::startSystemServices() {
-    // Phase 3: Start System Services — launch core windows
     m_desktop = std::make_shared<Desktop>();
     UIManager::getInstance().registerWindow("desktop", m_desktop);
     UIManager::getInstance().showWindow("desktop");
 
     m_taskbar = std::make_shared<Taskbar>();
+    UIManager::getInstance().registerWindow("taskbar", m_taskbar);
+    UIManager::getInstance().showWindow("taskbar");
 }
 
 void GUIApplication::run() {
-    // Phase 4: Enter Main Loop — handle events, dispatch, I/O
     while (!glfwWindowShouldClose(m_window) && !UIManager::getInstance().isShutdownRequested()) {
         glfwPollEvents();
 
@@ -108,7 +102,6 @@ void GUIApplication::run() {
         ImGui::NewFrame();
 
         m_desktop->draw();
-        UIManager::getInstance().renderAllWindows();
         m_taskbar->draw();
 
         ImGui::Render();
@@ -127,7 +120,6 @@ void GUIApplication::run() {
 }
 
 void GUIApplication::shutdown() {
-    // Phase 5: Shutdown and Cleanup — reverse init order
     if (ImGui::GetCurrentContext()) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
