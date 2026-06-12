@@ -1,6 +1,7 @@
 #include "Taskbar.h"
 #include "core/UIManager.h"
 
+#include <cstdlib>
 #include "imgui.h"
 
 namespace csopesy {
@@ -41,26 +42,12 @@ void Taskbar::draw() {
     drawIconArea();
     drawPowerButton();
 
-    if (showPowerPopup) {
-        float popupW = 180.0f;
-        float popupH = 80.0f;
-        ImGui::SetNextWindowPos(
-            ImVec2(displaySize.x - 8.0f - popupW,
-                   displaySize.y - taskbarHeight - popupH - 8.0f),
-            ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(popupW, popupH));
-        ImGui::SetNextWindowBgAlpha(0.95f);
+    ImGui::SetNextWindowPos(
+        ImVec2(displaySize.x - 8.0f - 180.0f,
+               displaySize.y - taskbarHeight - 80.0f - 8.0f),
+        ImGuiCond_Always);
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 10));
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);
-
-        ImGui::Begin("##PowerPopup", nullptr,
-            ImGuiWindowFlags_NoTitleBar  |
-            ImGuiWindowFlags_NoResize    |
-            ImGuiWindowFlags_NoMove      |
-            ImGuiWindowFlags_NoCollapse  |
-            ImGuiWindowFlags_NoScrollbar);
-
+    if (ImGui::BeginPopup("##PowerPopup")) {
         ImGui::Text("Shut down?");
         ImGui::Spacing();
 
@@ -68,21 +55,17 @@ void Taskbar::draw() {
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.70f, 0.16f, 0.16f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.90f, 0.20f, 0.20f, 1.0f));
         if (ImGui::Button("Yes", ImVec2(68, 26))) {
-            UIManager::getInstance().requestShutdown();
+            ImGui::CloseCurrentPopup();
+            std::exit(0);
         }
         ImGui::PopStyleColor(3);
 
         ImGui::SameLine(0, 8);
         if (ImGui::Button("No", ImVec2(68, 26))) {
-            showPowerPopup = false;
+            ImGui::CloseCurrentPopup();
         }
 
-        if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && ImGui::IsMouseClicked(0)) {
-            showPowerPopup = false;
-        }
-
-        ImGui::End();
-        ImGui::PopStyleVar(2);
+        ImGui::EndPopup();
     }
 
     ImGui::End();
@@ -94,10 +77,9 @@ void Taskbar::drawIconArea() {
 
     float padding  = 8.0f;
     float iconSize = taskbarHeight - padding * 2.0f;
-    float labelH   = 14.0f;   // height reserved for label below icon
+    float labelH   = 14.0f;
     float btnH     = iconSize - labelH;
 
-    // Each button: label, window key, icon text, hover color
     struct BtnDef {
         const char* label;
         const char* windowKey;
@@ -119,7 +101,6 @@ void Taskbar::drawIconArea() {
 
         ImGui::PushID(i);
 
-        // Highlight active windows
         if (isOpen) {
             ImGui::PushStyleColor(ImGuiCol_Button,
                 ImVec4(b.activeColor.x, b.activeColor.y, b.activeColor.z, b.activeColor.w));
@@ -143,7 +124,6 @@ void Taskbar::drawIconArea() {
         ImGui::PopStyleVar();
         ImGui::PopStyleColor(3);
 
-        // Label below button
         float labelX = ImGui::GetCursorPosX() - iconSize +
                        (iconSize - ImGui::CalcTextSize(b.label).x) * 0.5f;
         ImGui::SetCursorPosX(labelX);
@@ -153,7 +133,6 @@ void Taskbar::drawIconArea() {
         ImGui::TextUnformatted(b.label);
         ImGui::PopStyleColor();
 
-        // Move cursor to next button position
         ImGui::SetCursorPos(ImVec2(padding + (iconSize + padding) * (float)(i + 1), padding));
 
         ImGui::PopID();
@@ -174,7 +153,7 @@ void Taskbar::drawPowerButton() {
     ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.55f, 0.00f, 0.00f, 1.00f));
 
     if (ImGui::Button("PWR", ImVec2(btnW, btnH))) {
-        showPowerPopup = !showPowerPopup;
+        ImGui::OpenPopup("##PowerPopup");
     }
 
     ImGui::PopStyleColor(4);

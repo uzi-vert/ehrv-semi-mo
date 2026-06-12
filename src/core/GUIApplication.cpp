@@ -107,7 +107,7 @@ void GUIApplication::startSystemServices() {
 }
 
 void GUIApplication::run() {
-    while (!glfwWindowShouldClose(m_window) && !UIManager::getInstance().isShutdownRequested()) {
+    while (!glfwWindowShouldClose(m_window)) {
         glfwPollEvents();
 
         ImGui_ImplOpenGL3_NewFrame();

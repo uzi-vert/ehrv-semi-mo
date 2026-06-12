@@ -15,8 +15,7 @@ private:
     void drawIconArea();
     void drawPowerButton();
 
-    float taskbarHeight  = 96.0f;
-    bool  showPowerPopup = false;
+    float taskbarHeight = 96.0f;
 };
 
 } // namespace csopesy

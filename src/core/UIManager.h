@@ -21,14 +21,10 @@ public:
 
     void renderAllWindows();
 
-    void requestShutdown();
-    bool isShutdownRequested() const;
-
 private:
     UIManager() = default;
 
     std::map<std::string, std::shared_ptr<AWindow>> windows;
-    bool m_shutdownRequested = false;
 };
 
 } // namespace csopesy

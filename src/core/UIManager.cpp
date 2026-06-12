@@ -9,7 +9,6 @@ UIManager& UIManager::getInstance() {
 
 void UIManager::initialize() {
     windows.clear();
-    m_shutdownRequested = false;
 }
 
 void UIManager::registerWindow(const std::string& name, std::shared_ptr<AWindow> window) {
@@ -49,14 +48,6 @@ void UIManager::renderAllWindows() {
             window->draw();
         }
     }
-}
-
-void UIManager::requestShutdown() {
-    m_shutdownRequested = true;
-}
-
-bool UIManager::isShutdownRequested() const {
-    return m_shutdownRequested;
 }
 
 } // namespace csopesy
