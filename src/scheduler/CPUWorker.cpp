@@ -41,6 +41,12 @@ void CPUWorker::run()
 
         std::ofstream file(process->name + ".txt");
 
+
+        file
+            << "Process name: "
+            << process->name
+            << "\nLogs:\n\n";
+
         for (int i = 0; i < process->totalPrints; i++)
         {
             file

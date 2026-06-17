@@ -125,7 +125,7 @@ void FCFSScheduler::screen_ls()
         << "\n---------------------------------\n";
 
     std::cout
-        << "Running Processes\n\n";
+        << "Running Processes:\n";
 
     for (auto& p : runningProcesses)
     {
@@ -133,7 +133,7 @@ void FCFSScheduler::screen_ls()
             << p->name
             << "\t"
             << p->timestamp
-            << "\tCore:"
+            << "\t\tCore: "
             << p->assignedCore
             << "\t"
             << p->completedPrints
@@ -143,7 +143,7 @@ void FCFSScheduler::screen_ls()
     }
 
     std::cout
-        << "\nFinished Processes\n\n";
+        << "\nFinished Processes:\n";
 
     for (auto& p : finishedProcesses)
     {
@@ -151,7 +151,7 @@ void FCFSScheduler::screen_ls()
             << p->name
             << "\t"
             << p->timestamp
-            << "\tFinished\t"
+            << "\t\tFinished\t"
             << p->completedPrints
             << " / "
             << p->totalPrints
