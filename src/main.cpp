@@ -10,12 +10,6 @@ int main()
     scheduler.createProcesses(10);
 
     scheduler.start();
-
-    std::cout << "CSOPESY FCFS Scheduler\n";
-    std::cout << "Commands:\n";
-    std::cout << "screen -ls\n";
-    std::cout << "exit\n\n";
-
     std::string command;
 
     while (true)
