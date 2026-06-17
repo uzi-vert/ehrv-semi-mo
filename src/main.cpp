@@ -1,13 +1,38 @@
-#include "core/GUIApplication.h"
+#include "scheduler/FCFSScheduler.h"
 
-int main() {
-    csopesy::GUIApplication app;
+#include <iostream>
+#include <string>
 
-    if (!app.initialize()) {
-        return 1;
+int main()
+{
+    FCFSScheduler scheduler;
+
+    scheduler.createProcesses(10);
+
+    scheduler.start();
+
+    std::cout << "CSOPESY FCFS Scheduler\n";
+    std::cout << "Commands:\n";
+    std::cout << "screen -ls\n";
+    std::cout << "exit\n\n";
+
+    std::string command;
+
+    while (true)
+    {
+        std::getline(std::cin, command);
+
+        if (command == "screen -ls")
+        {
+            scheduler.screen_ls();
+        }
+        else if (command == "exit")
+        {
+            break;
+        }
     }
 
-    app.run();
+    scheduler.stop();
 
     return 0;
 }
