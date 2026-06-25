@@ -23,6 +23,26 @@ FCFSScheduler::~FCFSScheduler()
     stop();
 }
 
+void FCFSScheduler::initializeConfig(const std::unordered_map<std::string, std::string>& config)
+{
+    if (config.count("num-cpu")) 
+        numCpu = std::stoi(config.at("num-cpu"));
+
+    if (config.count("delay-per-exec")) {
+        float delaySec = std::stof(config.at("delay-per-exec"));
+        delayPerExec = static_cast<int>(delaySec * 1000);
+    }
+
+    if (config.count("min-ins")) 
+        minIns = std::stoi(config.at("min-ins"));
+
+    if (config.count("max-ins")) 
+        maxIns = std::stoi(config.at("max-ins"));
+
+    if (config.count("batch-process-freq")) 
+        batchProcessFreq = std::stoi(config.at("batch-process-freq"));
+}
+
 void FCFSScheduler::start()
 {
     running = true;
@@ -32,7 +52,7 @@ void FCFSScheduler::start()
             &FCFSScheduler::schedulerLoop,
             this);
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < numCpu; i++)
     {
         workers.push_back(
             std::make_unique<CPUWorker>(i, this));

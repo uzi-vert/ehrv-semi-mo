@@ -70,7 +70,7 @@ void CPUWorker::run()
             process->completedPrints++;
 
             std::this_thread::sleep_for(
-                std::chrono::milliseconds(50));
+                std::chrono::milliseconds(m_scheduler->getDelayPerExec()));
         }
 
         if (file.is_open())

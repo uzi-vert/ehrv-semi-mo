@@ -1,6 +1,9 @@
 #include "scheduler/FCFSScheduler.h"
 #include "core/GUIApplication.h"
 
+#include <unordered_map>
+#include <fstream>
+#include <sstream>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -26,9 +29,17 @@ static void showMarquee()
     clearScreen();
 
     std::cout
-        << "  =====================================================\n"
-        << "            CSOPESY Operating System Simulator\n"
-        << "  =====================================================\n\n";
+            << "  =====================================================\n"
+            << "            CSOPESY Operating System Simulator\n"
+            << "  =====================================================\n\n"
+            << "  Welcome to CSOPESY Emulator!\n\n"
+            << "  Developers:\n"
+            << "  Dela Cruz, Ethan Iago\n"
+            << "  Dizon, Rohann Gabriel\n"
+            << "  Tandingan, Hyun Jei\n"
+            << "  Valdez, Pulvert\n\n"
+            << "  Type 'initialize' to run\n"
+            << "  -----------------------------------------------------\n";
 }
 
 static void bootSequence()
@@ -110,6 +121,28 @@ static void printHelp()
         << "\n";
 }
 
+// read key value pairs inside config.txt
+static std::unordered_map<std::string, std::string> loadConfig(const std::string& filename){
+    std::unordered_map<std::string, std::string> config;
+    std::ifstream file(filename);
+    
+    if (!file.is_open()){
+        std::cout << "  Error: Could not open " << filename << "\n";
+        return config;
+    }
+
+    std::string line;
+    while (std::getline(file, line)){
+        std::istringstream iss(line);
+        std::string key, value;
+        
+        if (iss >> key >> value){
+            config[key] = value;
+        }
+    }
+    return config;
+}
+
 int main(int argc, char* argv[])
 {
     bool consoleMode = false;
@@ -125,14 +158,10 @@ int main(int argc, char* argv[])
 
     if (consoleMode)
     {
+        bool isInitialized = false;
+        csopesy::scheduler::FCFSScheduler scheduler; 
+
         showMarquee();
-        bootSequence();
-
-        csopesy::scheduler::FCFSScheduler scheduler;
-
-        scheduler.createProcesses(10);
-
-        scheduler.start();
 
         std::string command;
 
@@ -151,7 +180,37 @@ int main(int argc, char* argv[])
 
             std::cout << "\n  > " << command << "\n";
 
-            if (command == "screen -ls")
+            if (command == "exit")
+            {
+                std::cout << "  Shutting down...\n\n";
+                break;
+            }
+            else if (command == "initialize")
+            {
+                if (isInitialized) {
+                    std::cout << "  System has already been initialized.\n";
+                } else {
+                    bootSequence();
+                    std::cout << "  Reading config.txt...\n"; 
+
+                    auto config = loadConfig("config.txt");
+                    if (config.empty()) {
+                        std::cout << "  Config missing or empty.\n";
+                        continue;
+                    }
+
+                    scheduler.initializeConfig(config);
+                    
+                    scheduler.start();
+                    isInitialized = true;
+                    std::cout << "  System initialized successfully.\n";
+                }
+            }
+            else if (!isInitialized) 
+            {
+                std::cout << "  System not initialized. Please run 'initialize' first.\n";
+            }
+            else if (command == "screen -ls")
             {
                 scheduler.screen_ls();
             }
@@ -163,21 +222,15 @@ int main(int argc, char* argv[])
             {
                 printHelp();
             }
-            else if (command == "exit")
-            {
-                std::cout << "  Shutting down...\n\n";
-                break;
-            }
             else
             {
-                std::cout
-                    << "  Unknown command: '"
-                    << command
-                    << "'. Type 'help'.\n";
+                std::cout << "  Unknown command: '" << command << "'. Type 'help'.\n";
             }
         }
 
-        scheduler.stop();
+        if (isInitialized) {
+            scheduler.stop();
+        }
 
         return 0;
     }

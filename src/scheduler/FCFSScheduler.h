@@ -8,6 +8,7 @@
 #include <mutex>
 #include <thread>
 #include <string>
+#include <unordered_map>
 
 namespace csopesy {
 namespace scheduler {
@@ -19,6 +20,9 @@ class FCFSScheduler
 public:
     FCFSScheduler(bool generateFiles = true);
     ~FCFSScheduler();
+
+    void initializeConfig(const std::unordered_map<std::string, std::string>& config);
+    int getDelayPerExec() const { return delayPerExec; }
 
     void start();
     void stop();
@@ -53,6 +57,13 @@ private:
 
     bool running;
     bool m_generateFiles;
+
+    // config.txt variables
+    int numCpu = 4;
+    int batchProcessFreq = 1;
+    int minIns = 1000;
+    int maxIns = 2000;
+    int delayPerExec = 0;
 };
 
 } // namespace scheduler
