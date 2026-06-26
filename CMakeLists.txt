@@ -97,3 +97,8 @@ target_link_libraries(csopesy PRIVATE
     opengl32
     Threads::Threads
 )
+
+# -------------------------------------------------------------------
+# Copy configuration file to build directory
+# -------------------------------------------------------------------
+file(COPY ${CMAKE_SOURCE_DIR}/config.txt DESTINATION ${CMAKE_BINARY_DIR})
